@@ -1,6 +1,6 @@
 # Tutorial
 
-This tutorial will show how to build a gRPC web service using Mortar   
+This tutorial will show how to build a gRPC web service using [go-masonry/mortar](https://github.com/go-masonry/mortar)   
 
 ## Prerequisites 
 
@@ -12,8 +12,8 @@ This tutorial will show how to build a gRPC web service using Mortar
 ## Workshop
 
 In this tutorial we are going to build a Workshop web service. Our Workshop specializes in painting cars.
-In order to paint a car first it needs to be accepted in our Workshop. Once accepted we can paint our car.
-Once painted the customer can collect it.
+In order to paint a car first it needs to be *accepted* in our Workshop. Once accepted we can *paint* our car.
+Once painted the customer can *collect* it.
 
 Given all the above we should expose these Endpoints:
 - Accept Car
@@ -40,7 +40,7 @@ Well why not? To help us achieve this we will use [grpc-gateway](https://github.
 If you are not familiar with it please read about it, it's an **amazing project**.
 
 REST API still needs to be defined and grpc-gateway supports [1](https://grpc-ecosystem.github.io/grpc-gateway/docs/usage.html), [2](https://grpc-ecosystem.github.io/grpc-gateway/docs/grpcapiconfiguration.html) ways of doing it.
-Since we own our proto files we can "enrich" them, hence we are going to use option #1. We are going to add custom options to our proto files.
+Since we own our proto files we can "enrich" them, hence we are going to use option #1. Let's go ahead and add custom options to our proto files.
   
 ```protobuf
 import "google/api/annotations.proto";
@@ -75,6 +75,8 @@ Plot twist, our Workshop is not going to do the actual painting but will delegat
 SubWorkshop will expose only one Endpoint:
 - Paint Car
 
+**In this tutorial our service will implement both APIs.**
+
 We will use protobuf again to describe it
 ```protobuf
 service SubWorkshop{
@@ -83,8 +85,6 @@ service SubWorkshop{
 ```
 
 > Our internal SubWorkshop service will only expose gRPC API
-
-In this tutorial our service will implement both APIs
 
 ## Generating code from our proto file
 
