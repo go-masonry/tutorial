@@ -71,7 +71,7 @@ grpc-gateway protoc plugin will use provided `(google.api.http)` options to gene
 
 ## SubWorkshop
 
-Plot twist, our Workshop is not going to do the actual painting but will delegate this task to another Workshop->SubWorkshop.
+Plot twist, our Workshop is not going to do the actual painting but will delegate this task to another Workshop a.k.a SubWorkshop.
 SubWorkshop will expose only one Endpoint:
 - Paint Car
 
