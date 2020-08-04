@@ -57,7 +57,7 @@ service Workshop {
   rpc CarPainted(PaintFinishedRequest) returns (google.protobuf.Empty);
 }
 
-// --- Sub workshop only grpc
+// --- Sub workshop 
 
 message SubPaintCarRequest{
   Car car = 1;

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/go-masonry/mortar/constructors/partial"
 	"github.com/go-masonry/mortar/interfaces/log"
 	workshop "github.com/go-masonry/tutorial/api"
@@ -11,7 +13,6 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"
-	"net/http"
 )
 
 const (
@@ -68,7 +69,7 @@ func (w *workshopController) PaintCar(ctx context.Context, request *workshop.Pai
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("paiting failed with status %d", response.StatusCode)
+		return nil, fmt.Errorf("painting failed with status %d", response.StatusCode)
 	}
 	return &empty.Empty{}, nil
 }
