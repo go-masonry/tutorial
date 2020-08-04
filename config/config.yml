@@ -1,5 +1,5 @@
 mortar:
-  name: "draft"
+  name: "tutorial"
   server:
     grpc:
       port: 5380

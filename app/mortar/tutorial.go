@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type draftServiceDeps struct {
+type tutorialServiceDeps struct {
 	fx.In
 
 	// API Implementations
@@ -22,24 +22,24 @@ type draftServiceDeps struct {
 	SubWorkshop workshop.SubWorkshopServer
 }
 
-func DraftAPIsAndOtherDependenciesFxOption() fx.Option {
+func TutorialAPIsAndOtherDependenciesFxOption() fx.Option {
 	return fx.Options(
 		// GRPC Service APIs registration
 		fx.Provide(fx.Annotated{
 			Group:  partial.FxGroupGRPCServerAPIs,
-			Target: draftGRPCServiceAPIs,
+			Target: tutorialGRPCServiceAPIs,
 		}),
 		// GRPC Gateway Generated Handlers registration
 		fx.Provide(fx.Annotated{
 			Group:  partial.FxGroupGRPCGatewayGeneratedHandlers + ",flatten", // "flatten" does this [][]serverInt.GRPCGatewayGeneratedHandlers -> []serverInt.GRPCGatewayGeneratedHandlers
-			Target: draftGRPCGatewayHandlers,
+			Target: tutorialGRPCGatewayHandlers,
 		}),
-		// All other draft dependencies
-		draftDependencies(),
+		// All other tutorial dependencies
+		tutorialDependencies(),
 	)
 }
 
-func draftGRPCServiceAPIs(deps draftServiceDeps) serverInt.GRPCServerAPI {
+func tutorialGRPCServiceAPIs(deps tutorialServiceDeps) serverInt.GRPCServerAPI {
 	return func(srv *grpc.Server) {
 		workshop.RegisterWorkshopServer(srv, deps.Workshop)
 		workshop.RegisterSubWorkshopServer(srv, deps.SubWorkshop)
@@ -47,7 +47,7 @@ func draftGRPCServiceAPIs(deps draftServiceDeps) serverInt.GRPCServerAPI {
 	}
 }
 
-func draftGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
+func tutorialGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
 	return []serverInt.GRPCGatewayGeneratedHandlers{
 		// Register workshop REST API
 		func(mux *runtime.ServeMux, endpoint string) error {
@@ -61,7 +61,7 @@ func draftGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
 	}
 }
 
-func draftDependencies() fx.Option {
+func tutorialDependencies() fx.Option {
 	return fx.Provide(
 		services.CreateWorkshopService,
 		services.CreateSubWorkshopService,

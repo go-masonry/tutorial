@@ -50,6 +50,7 @@ func CreateWorkshopController(deps workshopControllerDeps) WorkshopController {
 
 func (w *workshopController) AcceptCar(ctx context.Context, car *workshop.Car) (*empty.Empty, error) {
 	err := w.deps.DB.InsertCar(ctx, FromProtoCarToModelCar(car))
+	w.deps.Logger.WithError(err).Debug(ctx, "car accepted")
 	return &empty.Empty{}, err
 }
 

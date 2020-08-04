@@ -33,8 +33,8 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 		mortar.HttpClientFxOptions(),
 		mortar.HttpServerFxOptions(),
 		mortar.InternalHttpHandlersFxOptions(),
-		// Draft service dependencies
-		mortar.DraftAPIsAndOtherDependenciesFxOption(), // register draft APIs
+		// Tutorial service dependencies
+		mortar.TutorialAPIsAndOtherDependenciesFxOption(), // register tutorial APIs
 		// This one invokes all the above
 		providers.CreateEntireWebServiceDependencyGraph(), // http server invoker
 	)
