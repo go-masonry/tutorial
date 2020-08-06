@@ -4,18 +4,20 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
 
 - [Tutorial](#tutorial)
   - [Prerequisites](#prerequisites)
-  - [Workshop](#workshop)
+  - [Part 1 API](#part-1-api)
+    - [Workshop](#workshop)
     - [gRPC](#grpc)
     - [Adding REST](#adding-rest)
-  - [SubWorkshop](#subworkshop)
-  - [Generating code from our proto file](#generating-code-from-our-proto-file)
-  - [Project Structure](#project-structure)
-  - [Building Workshop](#building-workshop)
-    - [Services](#services)
-    - [Validations](#validations)
-    - [Controllers](#controllers)
-    - [Fake DB](#fake-db)
-  - [Building SubWorkshop](#building-subworkshop)
+    - [SubWorkshop](#subworkshop)
+    - [Generating code from our proto file](#generating-code-from-our-proto-file)
+  - [Part 2 Implementing](#part-2-implementing)
+    - [Project Structure](#project-structure)
+    - [Building Workshop](#building-workshop)
+      - [Services](#services)
+      - [Validations](#validations)
+      - [Controllers](#controllers)
+      - [Fake DB](#fake-db)
+    - [Building SubWorkshop](#building-subworkshop)
   - [Dependency Injection using Uber-FX](#dependency-injection-using-uber-fx)
     - [Introducing Mortar and Bricks](#introducing-mortar-and-bricks)
     - [Back to code](#back-to-code)
@@ -30,9 +32,11 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
 - You should be familiar with [Protobuf](https://developers.google.com/protocol-buffers), [gRPC](https://grpc.io) and [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) / [Swagger](https://en.wikipedia.org/wiki/OpenAPI_Specification)
   - Install everything related to `gRPC` starting [here](https://developers.google.com/protocol-buffers/docs/gotutorial)
 - You should understand what [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) is
-- Have access to [Jaeger](https://www.jaegertracing.io/docs/1.18/getting-started) service
+- *Optional* Have access to [Jaeger](https://www.jaegertracing.io/docs/1.18/getting-started) service
 
-## Workshop
+## Part 1 API
+
+### Workshop
 
 In this tutorial we are going to build a Workshop (Garage) web service. Our Workshop specializes in painting cars.
 In order to paint a car first it needs to be *accepted* in our Workshop. Once accepted we can *paint* it.
@@ -94,7 +98,7 @@ service Workshop {
 
 grpc-gateway protoc plugin will use provided `(google.api.http)` options to generate our reverse-proxy REST layer.
 
-## SubWorkshop
+### SubWorkshop
 
 **Plot twist**, our Workshop is not going to do the actual painting but will delegate this task to another Workshop a.k.a SubWorkshop.
 SubWorkshop will expose only one Endpoint:
@@ -125,7 +129,7 @@ service SubWorkshop{
 }
 ```
 
-## Generating code from our proto file
+### Generating code from our proto file
 
 If you haven't installed grpc-gateway plugin by now, please do.
 
@@ -141,9 +145,11 @@ protoc  -I. \
   garage.proto
 ```
 
-You can find all the generated files [here](api).
+You can find all the generated files [here](complete/api).
 
-## Project Structure
+## Part 2 Implementing
+
+### Project Structure
 
 This tutorial proposes a project structure, it doesn't really matter which one you choose to create. What's more important is that your services project structure should look as similar as possible. This helps a lot when there are different projects/groups and handful of developers.
 
@@ -174,7 +180,7 @@ Let's make a brief overview
 - `config` all configuration files should be here.
 - `tests` functional/integration tests.
   
-## Building Workshop
+### Building Workshop
 
 In this part we will build the following
 
@@ -183,7 +189,7 @@ In this part we will build the following
 - [Controllers](#controllers)
 - [DB](#fake-db)
 
-### Services
+#### Services
 
 Every input starts with `service`, once we get an input we want to `validate` it. Once validated we will call a `controller` to do the actual business logic. For the sake of brevity we will show only one Function
 
@@ -215,7 +221,7 @@ type workshopServiceDeps struct {
 }
 ```
 
-### Validations
+#### Validations
 
 To simplify how we call our dependencies (validations, controllers) we defined Validation Interface to match our Service API. The only difference is that Validations functions return just an `error`.
 
@@ -228,7 +234,7 @@ type WorkshopValidations interface {
 }
 ```
 
-### Controllers
+#### Controllers
 
 Since Controller will implement the same exact gRPC API we can simply embed it.
 
@@ -238,7 +244,7 @@ type WorkshopController interface {
 }
 ```
 
-If you were following this tutorial you will remember that we also have a SubWorkshop service. Our business logic should call this SubWorkshop to actually paint the car, given the car was previously accepted by the Workshop. In this example we will use `*http.Client` a.k.a REST Client to call SubWorkshop API.
+Please remember that we also have a SubWorkshop service. Our business logic should call this SubWorkshop to actually paint the car, given the car was previously accepted by the Workshop. In this example we will use `*http.Client` a.k.a REST Client to call SubWorkshop API.
 
 ```golang
 type workshopController struct {
@@ -267,7 +273,7 @@ func (w *workshopController) PaintCar(ctx context.Context, request *workshop.Pai
 }
 ```
 
-### Fake DB
+#### Fake DB
 
 Once our Workshop accepts a car it needs to store it somewhere. We will fake a DB by using a simple MAP `map[string]*CarEntity`
 
@@ -293,7 +299,7 @@ type CarDB interface {
 
 If you want to understand how everything should work, please take a look at the code within this directory.
 
-## Building SubWorkshop
+### Building SubWorkshop
 
 SubWorkshop needs to do one thing, paint the car. Once it paints the car it needs to tell the Workshop that it finished. Now if you look at the SubWorkshop Request it has a callback field. We will use the callback value as an address to call the Workshop service. This time we will call Workshop gRPC API (one that wasn't exposed as REST).
 

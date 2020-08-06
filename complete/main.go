@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/alecthomas/kong"
 	"github.com/go-masonry/mortar/providers"
-	"github.com/go-masonry/tutorial/app/mortar"
+	"github.com/go-masonry/tutorial/complete/app/mortar"
 	"go.uber.org/fx"
 )
 

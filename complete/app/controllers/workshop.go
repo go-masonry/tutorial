@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-masonry/mortar/constructors/partial"
 	"github.com/go-masonry/mortar/interfaces/log"
-	workshop "github.com/go-masonry/tutorial/api"
-	"github.com/go-masonry/tutorial/app/db"
+	workshop "github.com/go-masonry/tutorial/complete/api"
+	"github.com/go-masonry/tutorial/complete/app/db"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"

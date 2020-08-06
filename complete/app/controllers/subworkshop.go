@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-masonry/mortar/interfaces/http/client"
 	"github.com/go-masonry/mortar/interfaces/log"
-	workshop "github.com/go-masonry/tutorial/api"
+	workshop "github.com/go-masonry/tutorial/complete/api"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"

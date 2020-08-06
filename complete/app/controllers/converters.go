@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	workshop "github.com/go-masonry/tutorial/api"
-	"github.com/go-masonry/tutorial/app/db"
+	workshop "github.com/go-masonry/tutorial/complete/api"
+	"github.com/go-masonry/tutorial/complete/app/db"
 )
 
 func FromProtoCarToModelCar(car *workshop.Car) *db.CarEntity {

@@ -3,7 +3,7 @@ package validations
 import (
 	"context"
 	"fmt"
-	workshop "github.com/go-masonry/tutorial/api"
+	workshop "github.com/go-masonry/tutorial/complete/api"
 	"strings"
 )
 

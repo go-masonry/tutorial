@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"github.com/go-masonry/mortar/interfaces/log"
-	workshop "github.com/go-masonry/tutorial/api"
-	"github.com/go-masonry/tutorial/app/controllers"
-	"github.com/go-masonry/tutorial/app/validations"
+	workshop "github.com/go-masonry/tutorial/complete/api"
+	"github.com/go-masonry/tutorial/complete/app/controllers"
+	"github.com/go-masonry/tutorial/complete/app/validations"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"
 )
@@ -20,7 +20,7 @@ type workshopServiceDeps struct {
 
 type workshopImpl struct {
 	deps                                 workshopServiceDeps
-	workshop.UnimplementedWorkshopServer // if keep this one added even when you change your interface this code will compile
+	workshop.UnimplementedWorkshopServer  // if keep this one added even when you change your interface this code will compile
 }
 
 func CreateWorkshopService(deps workshopServiceDeps) workshop.WorkshopServer {
