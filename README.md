@@ -18,14 +18,18 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
       - [Controllers](#controllers)
       - [Fake DB](#fake-db)
     - [Building SubWorkshop](#building-subworkshop)
-  - [Dependency Injection using Uber-FX](#dependency-injection-using-uber-fx)
+  - [Part 3 Mortar and Bricks](#part-3-mortar-and-bricks)
+    - [Dependency Injection](#dependency-injection)
     - [Introducing Mortar and Bricks](#introducing-mortar-and-bricks)
     - [Back to code](#back-to-code)
-  - [Wiring](#wiring)
+  - [Part 4 Instrumentation](#part-4-instrumentation)
     - [main.go](#maingo)
+    - [Dependencies and Constructors](#dependencies-and-constructors)
     - [Configuration](#configuration)
     - [Logger](#logger)
     - [Wiring WebService](#wiring-webservice)
+    - [GRPC and GRPC-Gateway](#grpc-and-grpc-gateway)
+  - [Part 5 Goodies](#part-5-goodies)
 
 ## Prerequisites
 
@@ -323,36 +327,45 @@ func (s *subWorkshopController) PaintCar(ctx context.Context, request *workshop.
 
 Here we only showing you Controller implementation, but there are also validations and service implementation. Feel free to browse.
 
-## Dependency Injection using [Uber-FX](https://github.com/uber-go/fx)
+## Part 3 Mortar and Bricks
+
+### Dependency Injection
 
 If you are unfamiliar with it, it's best to read/watch all about it. No seriously, do it.
+Mortar is heavily based on uber-fx and because of it your application will also be based on it. Once you see the benefits it offers you'll probably never write services without it.
 
 - <https://www.youtube.com/watch?v=LDGKQY8WJEM>
 - <https://godoc.org/go.uber.org/fx>
 
-Mortar is heavily based on uber-fx and because of it your application will also be based on it. Once you see the benefits it offers you'll probably never write services without it.
-
 ### Introducing Mortar and Bricks
 
-After all you are reading how to build a service with Mortar and so far we haven't mentioned it at all.
+After all you are reading how to build a service with Mortar and so far we haven't mentioned it at all. In fact the Business Logic in [Part2](#part-2-implementing) is not so special and can exist and work without Fx or Mortar.
+
+Let's introduce Mortar
 
 Try to think of Mortar as an [Abstract Type](https://en.wikipedia.org/wiki/Abstract_type) while your project implementation (and this Tutorial) can be seen as *Concrete Type*.
 
-Mortar defines several interfaces **without implementing** them, here are some.
+Mortar defines different interfaces **without implementing** them.
 
-- [Logger](https://github.com/go-masonry/mortar/blob/master/interfaces/log/interfaces.go)
-- [Config](https://github.com/go-masonry/mortar/blob/master/interfaces/cfg/interfaces.go)
+The reason Mortar doesn't implement them is because we don't want to reinvent the wheel. There are a lot of great libraries that solve different problems. One just need to make sure they are wrapped to implement Mortar Interfaces. Feel free to add yours.
 
-The reason Mortar doesn't implement them is because we don't want to reinvent the wheel. There are a lot of great libraries for logging and configuration. This way you can choose which implementation to use in your project. However, there are already some implementations for [Logger](https://github.com/go-masonry/bzerolog) and [Config](https://github.com/go-masonry/bviper) interfaces. Feel free to add yours.
+By the way we call these external Implementations [Bricks](https://github.com/go-masonry/mortar/wiki/bricks.md)
 
 So why not use original libraries directly ???
 
-There are several reasons for that. First we wanted to reduce [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code). Second is that for Mortar to be used by different projects we need to make sure everyone speaks the same language or Interfaces for that matter. This way every project can choose it's own implementation and it will not influence other projects. Third one is "middleware", many projects and Zerolog is no exclusion build their API without `context.Context` in mind. However if you ever built a gRPC Web Service or any others you become used to propagate `context.Context` interface as first parameter of every public Function. Since `context.Context` is also a map it is used as a storage to pass around functions/libraries. Now we want to capitalize on that. There are use-cases where we want to extract some of the information stored in the `context.Context` and use it else where. It can be real useful to **automatically** extract fields from the `context.Context` and add them to a log line. Hence Mortar Logger Interface is defined with that in mind. You can read more about Mortar "middleware concept" here. Actually Mortar provides a lot of different middleware, more on that later.
+There are several reasons for that. First we wanted to reduce [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code).
+Second is that for Mortar to be used by different projects we need to make sure everyone speaks the same language or [Interfaces](https://github.com/go-masonry/mortar/tree/master/interfaces) for that matter.
+This way every project can choose it's own implementation and it will not influence other projects.
+Third one is [Middleware](https://github.com/go-masonry/mortar/blob/master/wiki/middleware.md), many projects and Zerolog is no exclusion build their API without `context.Context` in mind.
+However if you ever built a gRPC Web Service or any others you become used to propagate `context.Context` interface as first parameter of at least every public Function.
+Since `context.Context` is also a map it is used as a storage to pass around functions/libraries.
+Now we also want to capitalize on that. There are use-cases where we want to extract some of the information stored in the `context.Context` and use it else where.
+It can be real useful to **automatically** extract fields from the `context.Context` and add them to a log line. Hence Mortar Logger Interface is defined with that in mind. Actually Mortar provides a lot of different middleware, more on that later.
 
 ### Back to code
 
-We will revisit our code with `uber-fx` and Mortar interfaces in mind.
-For example let's look at `workshopControllerDeps` 
+We will revisit our code with Fx and Mortar in mind.
+For example let's look at `workshopControllerDeps`
 
 ```golang
 type workshopControllerDeps struct {
@@ -370,19 +383,20 @@ func (w *workshopController) AcceptCar(ctx context.Context, car *workshop.Car) (
 }
 ```
 
-As you can see we introduced `fx.In` marker for our struct, and used Mortar Logger to log that we accepted a car. If you haven't read about `uber-fx` yet, `fx.In` marker will tell `uber-fx` to Inject all the Types that are Publicly defined in this struct. Even if the struct itself is private.
+As you can see we introduced `fx.In` marker to our struct, and used Mortar Logger to log that we accepted a car. If you haven't read about `uber-fx` yet, `fx.In` marker will tell `uber-fx` to Inject all the Types that are Publicly defined in this struct. Even if the struct itself is private.
 
 You should browse the code to get a feel of what changed.
 
-Actually at this point we have all our service logic completed. Now we need to "wire" everything.
+Actually at this point we have all our service logic revised with Mortar and Fx. Now we need to "wire" everything.
 
-## Wiring
+## Part 4 Instrumentation
 
-Like you probably noticed Mortar is heavily based on `uber-fx` and it also introduces some Interfaces. Now let us create all the dependencies and wire everything together.
+Like you probably noticed Mortar is heavily based on Fx and also introduces some Interfaces. But we haven't "created" any dependency yet. What we did we assumed everything will work (and it will). Now let us create all the dependencies and wire everything together.
 
 ### main.go
 
 Like any other program our tutorial must have a `main.go` file. Personally I prefer to keep it as simple and concise as possible. However given what we want to achieve here it will be somewhat hard, to help ourselves read/change this code later we will break it to functions.
+> I confess, breaking code into functions is not that new...
 
 ```golang
 func createApplication(configFilePath string, additionalFiles []string) *fx.App {
@@ -393,7 +407,11 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 }
 ```
 
-Now before we continue with the explanations I just want to remind you (yes you should get yourself familiar with `uber-fx`) that we need to explain `uber-fx` how to build our dependency graph. Since GO lacks meta programming we will need to do it explicitly. Do note that Mortar provides a lot of predefined `fx.Option`s, more about them later.
+As you can see in the above code `fx.New` accepts different options. This way you tell Fx how it should be your dependency graph.
+
+### Dependencies and Constructors
+
+Now, before we continue with the explanations I just want to remind you (yes you should get yourself familiar with `uber-fx`) that we need to explain Fx how to build our dependency graph. Since GO lacks meta programming we will need to do it explicitly. Do note that Mortar provides a lot of predefined `fx.Option`s, more about them later.
 
 To create a Dependency we need to have a function where it's return type is the Dependency. For example, here is a function that creates our Workshop Controller.
 
@@ -403,10 +421,12 @@ You can think of them as **[Constructors](https://en.wikipedia.org/wiki/Construc
 
 ### Configuration
 
-As mentioned before, you need to import Implementations for Mortar, in this Tutorial we are going to use [Viper](https://github.com/spf13/viper) for `Config`.
+As mentioned before, you need to import/build an Implementations for Mortar, in this Tutorial we are going to use [Viper](https://github.com/spf13/viper) for `Config`.
+We already *bricked* [bviper](https://github.com/go-masonry/bviper).
 
-It is good practice to use constants in your code instead of [magic numbers](https://en.wikipedia.org/wiki/Magic_number_(programming)) and it's even better to set them outside your code either by providing a config file or reading from Environment variable. Mortar have a `Config` interface that we mentioned earlier that is used everywhere to read them external configurations. But we need to provide an implementation for it. You can build one yourself or use <https://github.com/go-masonry/bviper>. To build a configuration you need to provide a configuration file or use one found under `config/config.yml` in our tutorial.
-While Mortar can be configured explicitly and that gives you total control over it. It is much comfortable to use it's defaults. To read them Mortar expects a dedicated Configuration key called **mortar**
+To build a configuration map we are going to use `config/config.yml` file in our tutorial. This file is going to be read by Viper. To read more about configuration read [here](https://github.com/go-masonry/mortar/blob/master/wiki/config.md).
+
+To use/configure it's predefined logic, Mortar expects a dedicated Configuration map under a Key called **mortar**
 
 ```yaml
 mortar:
@@ -438,11 +458,11 @@ func ViperFxOption(configFilePath string, additionalFilePaths ...string) fx.Opti
 }
 ```
 
-Remember your code is not the one calling the Constructors, Fx does it. Hence we can't tell it to use our custom parameters. But we can wrap this with a [Closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)). This way we have a Constructor `func() (cfg.Config, error)` that accepts no parameter and can be safely called by Fx.
+Remember your code is not the one calling the Constructors, Fx does it for you. Hence we can't tell it to provide custom parameters. But we can wrap this with a [Closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)). This way we have a Constructor `func() (cfg.Config, error)` that accepts no parameter and can be safely called by Fx.
 
 ### Logger
 
-I'm not going to explain why logging is important. I'll just say that Mortar have a `Logger` interface and we will use [Zerolog](https://github.com/rs/zerolog) to implement it.
+By now you got the idea, Mortar have a `Logger` interface and we will use [Zerolog](https://github.com/rs/zerolog) to implement it using [bzerolog](https://github.com/go-masonry/bzerolog) Brick.
 
 ```golang
 func LoggerFxOption() fx.Option {
@@ -466,9 +486,12 @@ If you look at this Constructor function
 
 `func ZeroLogBuilder(config cfg.Config) log.Builder`
 
-You see that it depends on `Config` which we provided earlier. However this Constructor function doesn't produce `Logger` instead it produces something called `log.Builder` which will later be used by Mortar to enrich our `Logger`.
+You see that it depends on `Config` which we provided earlier.
+This is an alternative way to tell Fx that in order to build `log.Builder` it needs to provide `Config` first.
+However this Constructor function doesn't produce `Logger` instead it produces something called `log.Builder` which will later be used by Mortar to configure it's Default `Logger`.
 
-This is why if you look above the Constructor function there is this line `providers.LoggerFxOption()`. I don't want to explain here how it enriches the `Logger` let's just say that it's output is the Logger itself. Here is how it's defined in Mortar.
+This is why if you look above the Constructor function there is this line `providers.LoggerFxOption()`. I don't want to explain here how it enriches/configures the `Logger` let's just say that it's output is the Logger itself. Feel free to look at the code.
+Here is how it's defined in Mortar.
 
 ```golang
 // LoggerFxOption adds Default Logger to the graph
@@ -479,17 +502,18 @@ func LoggerFxOption() fx.Option {
 
 ### Wiring WebService
 
-As you might recall we are building a Web Service here with gRPC and REST. It is time to introduce how one should configure Mortar Web Service. Like with any other dependency, we are going to use [go-grpc](https://grpc.io/docs/languages/go/basics/) and [grpc-gateway](https://grpc-ecosystem.github.io/grpc-gateway) to implement Http Web Service.
+After all we are building a Web Service here with gRPC and REST. It is time to introduce how one should configure Mortar Web Service. Like with any other dependency, we are going to use [go-grpc](https://grpc.io/docs/languages/go/basics/) and [grpc-gateway](https://grpc-ecosystem.github.io/grpc-gateway) to implement Http Web Service.
 
 You can look at [grpc-server-example](https://github.com/grpc/grpc-go/blob/master/examples/route_guide/server/server.go) example. Especially `func main()` there you can see how one can create and start a simple gRPC service.
 
-You can look at [grpc-gateway-example](https://grpc-ecosystem.github.io/grpc-gateway/docs/usage.html) example. Section 6 where there is also an example of how to create and start grpc-gateway service.
+You can also look at [grpc-gateway-example](https://grpc-ecosystem.github.io/grpc-gateway/docs/usage.html) example. Section 6 where there is also an example of how to create and start grpc-gateway service.
 
-One of Mortar goals is to reduce boilerplate code. However, we also want to give you total control on how to configure Mortars web service. Meaning you can configure both `grpc-server` and `grpc-gateway` the way you need. But, we have some good defaults which are mostly good for most cases.
+One of Mortar goals is to reduce boilerplate code. However, we also want you to be able to control how to configure Mortars web services.
+Meaning you can configure both `grpc-server` and `grpc-gateway` the way you need it. But, we have some defaults which are good for most cases.
 
-You can read all about Mortar Http Interfaces both for client and server [here](). This tutorial shows how to use it's defaults.
+You can read all about Mortar Http Interfaces both for client and server [here](). In this tutorial we show how to use it's defaults.
 
-To create Mortar web service you need to provide 2 options
+To create Mortar web service you need to provide Fx with at least these options
 
 1. Web Server Builder `providers.HttpServerBuilderFxOption()`
 2. Invoke everything related to Web server `providers.CreateEntireWebServiceDependencyGraph()`
@@ -513,4 +537,73 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 }
 ```
 
-You can see that we added 4 new dependencies to our graph. Well actually that's not true, there are several dependencies hiding behind these options. All these options will finally satisfy this Tutorial Logic.
+You can see that we added 4 new dependencies to our graph. Well actually that's not true, there are several dependencies hiding behind these options.
+
+### GRPC and GRPC-Gateway
+
+Although we created everything, actually nothing will work. That's because we haven't yet told gRPC Server what implements our API. Or even what that API is.
+This is also true for grpc-gateway configuration. We haven't registered any handlers to act as reverse-proxy for our gRPC API.
+
+For gRPC API first we need to provide at least one function that satisfies this type.
+
+```golang
+type GRPCServerAPI func(server *grpc.Server)
+```
+
+Like this
+
+```golang
+func tutorialGRPCServiceAPIs(deps tutorialServiceDeps) serverInt.GRPCServerAPI {
+  return func(srv *grpc.Server) {
+    workshop.RegisterWorkshopServer(srv, deps.Workshop)
+    workshop.RegisterSubWorkshopServer(srv, deps.SubWorkshop)
+  }
+}
+```
+
+and group all of them under `fx.Group` named `"grpcServerAPIs"` or use a predefined const alias.
+
+```golang
+// GRPC Service APIs registration
+fx.Provide(fx.Annotated{
+  Group:  groups.GRPCServerAPIs,
+  Target: tutorialGRPCServiceAPIs,
+})
+```
+
+For GRPC-Gateway reverse-proxy handlers we need to satisfy
+
+```golang
+type GRPCGatewayGeneratedHandlers func(mux *runtime.ServeMux, endpoint string) error
+```
+
+Like this
+
+```golang
+func tutorialGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
+  return []serverInt.GRPCGatewayGeneratedHandlers{
+    // Register workshop REST API
+    func(mux *runtime.ServeMux, endpoint string) error {
+      return workshop.RegisterWorkshopHandlerFromEndpoint(context.Background(), mux, endpoint, []grpc.DialOption{grpc.WithInsecure()})
+    },
+    // Register sub workshop REST API
+    func(mux *runtime.ServeMux, endpoint string) error {
+      return workshop.RegisterSubWorkshopHandlerFromEndpoint(context.Background(), mux, endpoint, []grpc.DialOption{grpc.WithInsecure()})
+    },
+    // Any additional gRPC gateway registrations should be called here
+  }
+}
+```
+
+and group all of them under `fx.Group` named `"grpcGatewayGeneratedHandlers"` or use predefined const alias.
+
+```golang
+// GRPC Gateway Generated Handlers registration
+fx.Provide(fx.Annotated{
+  Group:  groups.GRPCGatewayGeneratedHandlers + ",flatten", // "flatten" does this [][]serverInt.GRPCGatewayGeneratedHandlers -> []serverInt.GRPCGatewayGeneratedHandlers
+  Target: tutorialGRPCGatewayHandlers,
+})
+```
+
+## Part 5 Goodies
+
