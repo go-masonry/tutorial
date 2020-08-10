@@ -695,7 +695,7 @@ func InternalHttpHandlersFxOptions() fx.Option {
 
 >Once added you can access them on the internal REST port **5382**.
 
-Here is what you get just by adding this `fx.Option`
+Here is what you get just by adding these `fx.Option`s
 
 - <http://localhost:5382/self/config> Exposes your Configuration map with Environment Variables. Where you can obfuscate values if it holds sensitive information like Passwords, Tokens, etc.
   
@@ -756,3 +756,88 @@ Here is what you get just by adding this `fx.Option`
 
 _If you want to try this part yourself, make sure you have access to Jaeger service._
 
+> Now you will understand why SubWorkshop is part of this service and is served by a different API.
+
+When someone calls our `Paint Car` API
+
+```shell
+PUT /v1/workshop/cars/12345678/paint HTTP/1.1
+Accept: application/json, */*;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Content-Length: 25
+Content-Type: application/json
+Host: localhost:5381
+User-Agent: HTTPie/2.2.0
+
+{
+    "desired_color": "cyan"
+}
+```
+
+This is what actually happens on our service.
+
+1. **Workshop** REST API layer accepts the call.
+   - **Workshop** gRPC API is called via reverse-proxy, we use grpc-gateway.
+2. **Workshop** Business logic is then calls the SubWorkshop service, using REST client.
+3. **SubWorkshop** REST API layer accepts the call.
+   - **SubWorkshop** gRPC API is called via reverse-proxy.
+4. **SubWorkshop** Business logic calls back the Workshop, using gRPC client.
+5. **Workshop** gRPC API accepts the call.
+
+>Here SubWorkshop is on the same service, but since we are calling it remotely, it simulates a distant service.
+
+To better understand what happens on our service we want to enable [distributed-tracing](https://opentracing.io/docs/overview/what-is-tracing/)
+
+Again, all one needs to do is provide some `fx.Option`s to our graph.
+If you look at the `mortar/http.go` file you will see that we added new options to Clients and Server.
+
+- `providers.TracerGRPCClientInterceptorFxOption()` adds tracing information when any gRPC method is called on the gRPC client.
+- `providers.TracerRESTClientInterceptorFxOption()` same for REST client.
+- `providers.GRPCTracingUnaryServerInterceptorFxOption()` adds tracing information and starts a span on every incoming gRPC call.
+- `providers.GRPCGatewayMetadataTraceCarrierFxOption()` maps tracing information if it exists within the Request headers, avoids creating new span just to for REST-gRPC mapping.
+
+We also need to instrument a tracer implementation, in our case [bjaeger](https://github.com/go-masonry/bjaeger). Look at `mortar/tracing.go` and `main.go` respectively.
+
+> If you want to test this yourself, you will need to create 3 environment variables for Jaeger client.
+>
+> - `JAEGER_SAMPLER_TYPE=const`
+> - `JAEGER_SAMPLER_PARAM=1`
+> - `JAEGER_AGENT_HOST="192.168.99.100"` change this to your Jaeger IP.
+
+Here is what this looks like in the Jaeger UI
+
+- Accepting a Car
+  ![accept-car](jaeger-accept.png)
+- Painting a Car
+  ![paint-car](jaeger-paint.png)
+
+That's not all, remember our logs from before ? They can also be enriched with Tracing information.
+To enrich logs with trace info we added a `log.ContextExtractor` function.
+This function is defined within the `bviper` wrapper since only it can access `jaeger.SpanContext`.
+
+If you look at the `mortar/logger.go` file you can see that we added a new option to the Zerolog builder.
+
+```golang
+AddContextExtractors(bjaeger.TraceInfoExtractorFromContext)
+```
+
+There you go
+
+![logger-trace](logger-trace.png)
+
+TODO - add metrics
+
+Actually this is what [opentelemetry](https://opentelemetry.io/about/) is about. Here is how they define Observability
+
+> What is Observability?
+>
+> In software, observability typically refers to telemetry produced by services and is often divided into three major verticals:
+>
+> [Tracing](https://opentracing.io/docs/overview/what-is-tracing), aka distributed tracing, provides insight into the full lifecycles, aka traces, of requests to the system, allowing you to pinpoint failures and performance issues.
+>
+> [Metrics](https://opencensus.io/stats) provide quantitative information about processes running inside the system, including counters, gauges, and histograms.
+>
+> [Logging](https://en.wikipedia.org/wiki/Log_file) provides insight into application-specific messages emitted by processes.
+>
+> These verticals are tightly interconnected. Metrics can be used to pinpoint, for example, a subset of misbehaving traces. Logs associated with those traces could help to find the root cause of this behavior. And then new metrics can be configured, based on this discovery, to catch this issue earlier next time. Other verticals exist (continuous profiling, production debugging, etc.), however traces, metrics, and logs are the three most well adopted across the industry.
