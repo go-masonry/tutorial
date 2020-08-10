@@ -18,7 +18,7 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
       - [Controllers](#controllers)
       - [Fake DB](#fake-db)
     - [Building SubWorkshop](#building-subworkshop)
-  - [Part 3 Mortar and Bricks](#part-3-mortar-and-bricks)
+  - [Part 3 Uber-Fx](#part-3-uber-fx)
     - [Dependency Injection](#dependency-injection)
     - [Introducing Mortar and Bricks](#introducing-mortar-and-bricks)
     - [Back to code](#back-to-code)
@@ -29,7 +29,9 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
     - [Logger](#logger)
     - [Wiring WebService](#wiring-webservice)
     - [GRPC and GRPC-Gateway](#grpc-and-grpc-gateway)
-  - [Part 5 Goodies](#part-5-goodies)
+    - [Run it](#run-it)
+  - [Part 5 Middleware](#part-5-middleware)
+    - [Tracing](#tracing)
 
 ## Prerequisites
 
@@ -327,7 +329,7 @@ func (s *subWorkshopController) PaintCar(ctx context.Context, request *workshop.
 
 Here we only showing you Controller implementation, but there are also validations and service implementation. Feel free to browse.
 
-## Part 3 Mortar and Bricks
+## Part 3 Uber-Fx
 
 ### Dependency Injection
 
@@ -605,5 +607,67 @@ fx.Provide(fx.Annotated{
 })
 ```
 
-## Part 5 Goodies
+### Run it
+
+Finally we have a working Workshop and even a SubWorkshop.
+
+If you look at the `config/config.yml` file you will find 3 ports there.
+
+- gRPC `mortar.server.grpc.port` **5380**
+- Public REST `mortar.server.rest.external.port` **5381**
+- Private REST (more on this later)
+
+Let's run our service, please adjust your imports accordingly
+
+```shell
+go run main.go config config/config.yml
+```
+
+You should see something similar to this
+
+![part4-run](part4-run.png)
+
+Now you can test your service
+
+- Workshop should accept a new car
+  
+  ```shell
+  POST /v1/workshop/cars HTTP/1.1
+  Accept: application/json, */*;q=0.5
+  Accept-Encoding: gzip, deflate
+  Connection: keep-alive
+  Content-Length: 84
+  Content-Type: application/json
+  Host: localhost:5381
+  User-Agent: HTTPie/2.2.0
+
+  {
+      "body_style": "hatchback",
+      "color": "blue",
+      "id": "12345678",
+      "owner": "me myself"
+  }
+
+  HTTP/1.1 200 OK
+  Content-Length: 2
+  Content-Type: application/json
+  Date: Mon, 10 Aug 2020 05:47:44 GMT
+  Grpc-Metadata-Content-Type: application/grpc
+
+  {}
+  ```
+
+- You should see some logs that we added previously
+
+  ![log](part4-log.png)
+
+- You can stop the service with `Ctrl+C`
+  
+## Part 5 Middleware
+
+In this part you will see how you can add a lot of implicit logic without actually changing your business logic.
+
+### Tracing
+
+_If you want to try this part yourself, make sure you have access to Jaeger service._
 
