@@ -814,7 +814,7 @@ Here is what this looks like in the Jaeger UI
 
 That's not all, remember our logs from before ? They can also be enriched with Tracing information.
 
-> When you add tracing info to the logs, you an aggregate all the logs related to a single trace!
+> When you add tracing info to the logs, you can aggregate all the logs related to a single trace!
 
 To enrich logs with trace info we added a `log.ContextExtractor` function.
 This function is defined within the `bviper` wrapper since only it can access `jaeger.SpanContext`.
