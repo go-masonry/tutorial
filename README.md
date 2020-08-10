@@ -31,6 +31,7 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
     - [GRPC and GRPC-Gateway](#grpc-and-grpc-gateway)
     - [Run it](#run-it)
   - [Part 5 Middleware](#part-5-middleware)
+    - [Debug, profile, configuration](#debug-profile-configuration)
     - [Tracing](#tracing)
 
 ## Prerequisites
@@ -615,7 +616,7 @@ If you look at the `config/config.yml` file you will find 3 ports there.
 
 - gRPC `mortar.server.grpc.port` **5380**
 - Public REST `mortar.server.rest.external.port` **5381**
-- Private REST (more on this later)
+- Private REST `mortar.server.rest.internal.port` **5382** [explained and activated here](#debug-profile-configuration)
 
 Let's run our service, please adjust your imports accordingly
 
@@ -666,6 +667,90 @@ Now you can test your service
 ## Part 5 Middleware
 
 In this part you will see how you can add a lot of implicit logic without actually changing your business logic.
+
+### Debug, profile, configuration
+
+When your service is running in a cloud it is sometimes very convenient to understand how it was configured, last git commit, memory, run flags, etc.
+
+To add all of these goodies you need to provide Fx the following options
+
+- providers.InternalDebugHandlersFxOption()
+- providers.InternalProfileHandlerFunctionsFxOption()
+- providers.InternalSelfHandlersFxOption()
+  
+> More can be found [here](https://github.com/go-masonry/mortar/tree/master/providers).
+
+In this tutorial we have added them into a single function within `mortar/http.go` file and `main.go` respectively.
+
+```golang
+// These will help you to debug/profile or understand the internals of your service
+func InternalHttpHandlersFxOptions() fx.Option {
+  return fx.Options(
+    providers.InternalDebugHandlersFxOption(),
+    providers.InternalProfileHandlerFunctionsFxOption(),
+    providers.InternalSelfHandlersFxOption(),
+  )
+}
+```
+
+>Once added you can access them on the internal REST port **5382**.
+
+Here is what you get just by adding this `fx.Option`
+
+- <http://localhost:5382/self/config> Exposes your Configuration map with Environment Variables. Where you can obfuscate values if it holds sensitive information like Passwords, Tokens, etc.
+  
+  ```json
+  {
+    "config": {
+        "custom": {
+            "authentication": "****",
+            "plain": "text",
+            "secretmap": {
+                "one": "****",
+                "two": "****"
+            },
+            "token": "very****oken"
+        },
+        "mortar": {
+            "handlers": {
+                "self": {
+                    "obfuscate": "[pass auth secret login user logname token]"
+                }
+            },
+            "logger": {
+                "console": "true",
+                "level": "debug"
+            },
+        },
+        ...
+    },
+   "environment": {
+        "COLORTERM": "truecolor",
+        "GIT_ASKPASS": "/App****s.sh",
+        ...
+   }
+  }
+  ```
+
+- <http://localhost:5382/self/build> Exposes your build information. For this to work you will need to inject values during build, more on that [here](TODO).
+
+  ```json
+  {
+    "build_tag": "124",
+    "build_time": "0001-01-01T00:00:00Z",
+    "git_commit": "e191f74fd73e4b9cdddc1c4125194f293170d19f",
+    "hostname": "Tals-Mac-mini.lan",
+    "init_time": "2020-08-10T11:07:38.855258+03:00",
+    "up_time": "13m30.096195196s",
+    "version": "v0.0.1"
+  }
+  ```
+
+- <http://localhost:5382/internal/debug/pprof> package `pprof` with a different prefix `:[PORT]/internal/`.
+  More can be read [here](https://golang.org/pkg/net/http/pprof/).
+- <http://localhost:5382/internal/debug/vars> package [expvar](https://golang.org/pkg/expvar/).
+- <http://localhost:5382/internal/dump> heap dump.
+- <http://localhost:5382/internal/stats> memory, cpu, go-routines.
 
 ### Tracing
 

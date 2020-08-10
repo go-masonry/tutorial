@@ -24,7 +24,7 @@ func HttpServerFxOptions() fx.Option {
 	)
 }
 
-// These will have you to debug/profile or understand the internals of your service
+// These will help you to debug/profile or understand the internals of your service
 func InternalHttpHandlersFxOptions() fx.Option {
 	return fx.Options(
 		providers.InternalDebugHandlersFxOption(),
