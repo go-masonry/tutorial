@@ -158,7 +158,10 @@ You can find all the generated files [here](complete/api).
 
 ### Project Structure
 
-This tutorial proposes a project structure, it doesn't really matter which one you choose to create. What's more important is that your services project structure should look as similar as possible. This helps a lot when there are different projects/groups and handful of developers.
+This tutorial proposes a project structure.
+Having a consistent project structure helps a lot, however you can create your own, if needed.
+What's more important is that your services project structure should look as similar as possible.
+This helps a lot when there are different projects/groups and handful of developers.
 
 Let's make a brief overview
 
@@ -386,19 +389,24 @@ func (w *workshopController) AcceptCar(ctx context.Context, car *workshop.Car) (
 }
 ```
 
-As you can see we introduced `fx.In` marker to our struct, and used Mortar Logger to log that we accepted a car. If you haven't read about `uber-fx` yet, `fx.In` marker will tell `uber-fx` to Inject all the Types that are Publicly defined in this struct. Even if the struct itself is private.
+As you can see we introduced `fx.In` marker to our struct, and used Mortar Logger to log that we accepted a car.
+`fx.In` marker will tell Fx to Inject all the **Types** that are **Publicly** defined in this struct.
+Even if the struct itself is private.
 
-You should browse the code to get a feel of what changed.
+Please browse the code in part3 to better understand what was changed.
 
 Actually at this point we have all our service logic revised with Mortar and Fx. Now we need to "wire" everything.
 
 ## Part 4 Instrumentation
 
-Like you probably noticed Mortar is heavily based on Fx and also introduces some Interfaces. But we haven't "created" any dependency yet. What we did we assumed everything will work (and it will). Now let us create all the dependencies and wire everything together.
+Like you probably noticed Mortar is heavily based on Fx and introduces some Interfaces.
+Until now, we haven't "created" any dependency yet. What we did was to assume everything will work (and it will).
+Now let's create all the dependencies and wire everything together.
 
 ### main.go
 
-Like any other program our tutorial must have a `main.go` file. Personally I prefer to keep it as simple and concise as possible. However given what we want to achieve here it will be somewhat hard, to help ourselves read/change this code later we will break it to functions.
+Like any other program our tutorial must have a `main.go` file. Personally I prefer to keep it as simple and concise as possible.
+However, given what we want to achieve here it will be somewhat hard, to help ourselves read/change this code later we will break it to functions.
 > I confess, breaking code into functions is not that new...
 
 ```golang
@@ -414,7 +422,8 @@ As you can see in the above code `fx.New` accepts different options. This way yo
 
 ### Dependencies and Constructors
 
-Now, before we continue with the explanations I just want to remind you (yes you should get yourself familiar with `uber-fx`) that we need to explain Fx how to build our dependency graph. Since GO lacks meta programming we will need to do it explicitly. Do note that Mortar provides a lot of predefined `fx.Option`s, more about them later.
+Now, before we continue with the explanations I just want to remind you (yes you should get yourself familiar with Fx) that we need to explain Fx how to build our dependency graph.
+Since GO lacks meta programming we will need to do it explicitly. Do note that Mortar provides a lot of predefined `fx.Option`s, more about them later.
 
 To create a Dependency we need to have a function where it's return type is the Dependency. For example, here is a function that creates our Workshop Controller.
 
@@ -424,10 +433,11 @@ You can think of them as **[Constructors](https://en.wikipedia.org/wiki/Construc
 
 ### Configuration
 
-As mentioned before, you need to import/build an Implementations for Mortar, in this Tutorial we are going to use [Viper](https://github.com/spf13/viper) for `Config`.
-We already *bricked* [bviper](https://github.com/go-masonry/bviper).
+As mentioned before, you need to import/build an Implementation for Mortar, in this Tutorial we are going to use [Viper](https://github.com/spf13/viper) for `Config`.
+We already have it *bricked* [bviper](https://github.com/go-masonry/bviper).
 
-To build a configuration map we are going to use `config/config.yml` file in our tutorial. This file is going to be read by Viper. To read more about configuration read [here](https://github.com/go-masonry/mortar/blob/master/wiki/config.md).
+To build a configuration map we are going to use `config/config.yml` file in our tutorial. This file is going to be read by Viper.
+To read more about the configuration read [here](https://github.com/go-masonry/mortar/blob/master/wiki/config.md).
 
 To use/configure it's predefined logic, Mortar expects a dedicated Configuration map under a Key called **mortar**
 
