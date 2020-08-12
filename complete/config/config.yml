@@ -12,7 +12,7 @@ mortar:
     level: debug
     console: true
   monitor:
-    address: "host:port"
+    address: "address:port"
     prefix: "awesome.project"
     tags:
       tag1: value

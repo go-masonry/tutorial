@@ -9,7 +9,7 @@ import (
 	"github.com/go-masonry/mortar/constructors/partial"
 	"github.com/go-masonry/mortar/interfaces/log"
 	workshop "github.com/go-masonry/tutorial/complete/api"
-	"github.com/go-masonry/tutorial/complete/app/db"
+	"github.com/go-masonry/tutorial/complete/app/data"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"
@@ -27,7 +27,7 @@ type WorkshopController interface {
 type workshopControllerDeps struct {
 	fx.In
 
-	DB                db.CarDB
+	DB                data.CarDB
 	Logger            log.Logger
 	HttpClientBuilder partial.HttpClientPartialBuilder
 }
@@ -55,7 +55,7 @@ func (w *workshopController) AcceptCar(ctx context.Context, car *workshop.Car) (
 }
 
 func (w *workshopController) PaintCar(ctx context.Context, request *workshop.PaintCarRequest) (*empty.Empty, error) {
-	car, err := w.deps.DB.GetCar(ctx, request.GetCarId())
+	car, err := w.deps.DB.GetCar(ctx, request.GetCarNumber())
 	if err != nil {
 		return nil, err
 	}
@@ -76,26 +76,26 @@ func (w *workshopController) PaintCar(ctx context.Context, request *workshop.Pai
 }
 
 func (w *workshopController) RetrieveCar(ctx context.Context, request *workshop.RetrieveCarRequest) (*workshop.Car, error) {
-	car, err := w.deps.DB.GetCar(ctx, request.GetCarId())
+	car, err := w.deps.DB.GetCar(ctx, request.GetCarNumber())
 	if err != nil {
 		return nil, err
 	}
 	if car.Painted {
-		car, err = w.deps.DB.RemoveCar(ctx, request.GetCarId())
+		car, err = w.deps.DB.RemoveCar(ctx, request.GetCarNumber())
 		if err != nil {
 			return nil, err
 		}
 		return FromModelCarToProtoCar(car), nil
 	}
-	return nil, fmt.Errorf("car %s is not painted", request.GetCarId())
+	return nil, fmt.Errorf("car %s is not painted", request.GetCarNumber())
 }
 
 func (w *workshopController) CarPainted(ctx context.Context, request *workshop.PaintFinishedRequest) (*empty.Empty, error) {
-	err := w.deps.DB.PaintCar(ctx, request.GetCarId(), request.GetDesiredColor())
+	err := w.deps.DB.PaintCar(ctx, request.GetCarNumber(), request.GetDesiredColor())
 	return &empty.Empty{}, err
 }
 
-func (w *workshopController) makePaintRestRequest(ctx context.Context, car *db.CarEntity, request *workshop.PaintCarRequest) (httpReq *http.Request, err error) {
+func (w *workshopController) makePaintRestRequest(ctx context.Context, car *data.CarEntity, request *workshop.PaintCarRequest) (httpReq *http.Request, err error) {
 	pbReq := &workshop.SubPaintCarRequest{
 		Car:                    FromModelCarToProtoCar(car),
 		DesiredColor:           request.GetDesiredColor(),

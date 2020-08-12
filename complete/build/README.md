@@ -1,7 +1,8 @@
-# Build
+# /build
 
-At some point in time you will need to build, test and deploy your service.
+This directory should store everything related to build this service
 
-- You should store all the logic related to CI/CD or similar here
-- Scripts
+Examples
+
+- CI/CD or similar logic
 - Environment setup for tests

@@ -36,6 +36,6 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 		// Tutorial service dependencies
 		mortar.TutorialAPIsAndOtherDependenciesFxOption(), // register tutorial APIs
 		// This one invokes all the above
-		providers.CreateEntireWebServiceDependencyGraph(), // http server invoker
+		providers.BuildMortarWebService(), // http server invoker
 	)
 }

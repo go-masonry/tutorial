@@ -13,13 +13,13 @@ import (
 
 func LoggerFxOption() fx.Option {
 	return fx.Options(
-		fx.Provide(ZeroLogBuilder),
+		fx.Provide(zeroLogBuilder),
 		providers.LoggerFxOption(),
 		providers.LoggerGRPCIncomingContextExtractorFxOption(),
 	)
 }
 
-func ZeroLogBuilder(config cfg.Config) log.Builder {
+func zeroLogBuilder(config cfg.Config) log.Builder {
 	builder := bzerolog.
 		Builder().
 		// You can add explicit context extractors here or use the implicit fx.Group used by `go-masonry/mortar/constructors/logger.go`

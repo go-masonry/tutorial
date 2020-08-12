@@ -22,7 +22,7 @@ func CreateWorkshopValidations() WorkshopValidations {
 }
 
 func (w *workshopValidations) AcceptCar(ctx context.Context, car *workshop.Car) error {
-	return carIdValidation(car.GetId())
+	return carIdValidation(car.GetNumber())
 }
 
 func (w *workshopValidations) PaintCar(ctx context.Context, request *workshop.PaintCarRequest) error {
@@ -34,11 +34,11 @@ func (w *workshopValidations) PaintCar(ctx context.Context, request *workshop.Pa
 }
 
 func (w *workshopValidations) RetrieveCar(ctx context.Context, request *workshop.RetrieveCarRequest) error {
-	return carIdValidation(request.GetCarId())
+	return carIdValidation(request.GetCarNumber())
 }
 
 func (w *workshopValidations) CarPainted(ctx context.Context, request *workshop.PaintFinishedRequest) error {
-	return carIdValidation(request.GetCarId())
+	return carIdValidation(request.GetCarNumber())
 }
 
 func carIdValidation(carID string) error {

@@ -1,7 +1,7 @@
-# Config folder
+# /config
 
-Should hold your configuration files and additional resources if needed.
+This directory should store your configuration files and additional resources if needed.
 
 - `config.yml`
 - `config_test.yml` override `config.yml` settings but only for tests
-- Remote configurations info
+- Remote configurations (etcd,...)

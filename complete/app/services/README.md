@@ -1,6 +1,6 @@
-# Service Layer
+# /app/services
 
-Service layer should handle things that are not related to the actual business logic.
+Code in this directory should handle things that are not related to the actual business logic.
 This layer should only be familiar with everything related to API models.
 
 ## Should handle 
@@ -9,7 +9,8 @@ This layer should only be familiar with everything related to API models.
 - Authorization
     - Role check
 - Request/Response shaping
-    - Extract a value from Context and replace it's corresponding one in request/response 
+    - Extract a value from Context and replace it's corresponding one in request/response
+- Errors mapping 
     
 ## Shouldn't handle
 

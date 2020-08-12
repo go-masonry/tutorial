@@ -20,7 +20,7 @@ type workshopServiceDeps struct {
 
 type workshopImpl struct {
 	deps                                 workshopServiceDeps
-	workshop.UnimplementedWorkshopServer  // if keep this one added even when you change your interface this code will compile
+	workshop.UnimplementedWorkshopServer // if keep this one added even when you change your interface this code will compile
 }
 
 func CreateWorkshopService(deps workshopServiceDeps) workshop.WorkshopServer {

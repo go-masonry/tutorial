@@ -45,7 +45,7 @@ func (s *subWorkshopController) PaintCar(ctx context.Context, request *workshop.
 	}
 	// Make client and call method
 	workshopClient := workshop.NewWorkshopClient(conn)
-	return workshopClient.CarPainted(ctx, &workshop.PaintFinishedRequest{CarId: request.GetCar().GetId(), DesiredColor: request.GetDesiredColor()})
+	return workshopClient.CarPainted(ctx, &workshop.PaintFinishedRequest{CarNumber: request.GetCar().GetNumber(), DesiredColor: request.GetDesiredColor()})
 }
 
 func (s *subWorkshopController) doActualPaint(ctx context.Context, car *workshop.Car) error {

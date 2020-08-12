@@ -1,6 +1,6 @@
-# Controller Layer
+# /app/controllers
 
-Should handle everything related to business logic
+Code in this directory should handle everything related to business logic of this service.
 
 ## Examples
 

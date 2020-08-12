@@ -6,7 +6,7 @@ import (
 	serverInt "github.com/go-masonry/mortar/interfaces/http/server"
 	workshop "github.com/go-masonry/tutorial/complete/api"
 	"github.com/go-masonry/tutorial/complete/app/controllers"
-	"github.com/go-masonry/tutorial/complete/app/db"
+	"github.com/go-masonry/tutorial/complete/app/data"
 	"github.com/go-masonry/tutorial/complete/app/services"
 	"github.com/go-masonry/tutorial/complete/app/validations"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -67,7 +67,7 @@ func tutorialDependencies() fx.Option {
 		services.CreateSubWorkshopService,
 		controllers.CreateWorkshopController,
 		controllers.CreateSubWorkshopController,
-		db.CreateCarDB,
+		data.CreateCarDB,
 		validations.CreateWorkshopValidations,
 		validations.CreateSubWorkshopValidations,
 	)
