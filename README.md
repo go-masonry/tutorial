@@ -34,8 +34,10 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
     - [Debug, profile, configuration](#debug-profile-configuration)
     - [Tracing](#tracing)
   - [Part 6 Tests](#part-6-tests)
+    - [Overriding Configuration values in Tests](#overriding-configuration-values-in-tests)
     - [Fake REST API calls](#fake-rest-api-calls)
     - [Fake gRPC API calls](#fake-grpc-api-calls)
+  - [Makefile and LDFLAGS](#makefile-and-ldflags)
 
 ## Prerequisites
 
@@ -145,7 +147,7 @@ If you haven't installed grpc-gateway plugin by now, please do.
 
 To generate our code we will run the following command from within the `tutorial/api` directory
 
-```shell script
+```s
 protoc  -I. \
   -I$GOPATH/src \
   -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
@@ -168,7 +170,7 @@ This helps a lot when there are different projects/groups and handful of develop
 
 Let's make a brief overview
 
-```shell
+```s
 .
 ├── api
 ├── app
@@ -633,7 +635,7 @@ If you look at the `config/config.yml` file you will find 3 ports there.
 
 Let's run our service, please adjust your imports accordingly
 
-```shell
+```shell script
 go run main.go config config/config.yml
 ```
 
@@ -645,7 +647,7 @@ Now you can test your service
 
 - Workshop should accept a new car
   
-  ```shell
+  ```s
   POST /v1/workshop/cars HTTP/1.1
   Accept: application/json, */*;q=0.5
   Accept-Encoding: gzip, deflate
@@ -745,17 +747,17 @@ Here is what you get just by adding these `fx.Option`s
   }
   ```
 
-- <http://localhost:5382/self/build> Exposes your build information. For this to work you will need to inject values during build, more on that [here](TODO).
+- <http://localhost:5382/self/build> Exposes your build information. For this to work you will need to inject values during build, more on that [here](#makefile-and-ldflags).
 
   ```json
   {
-    "build_tag": "124",
+    "build_tag": "wasn't provided during build",
     "build_time": "0001-01-01T00:00:00Z",
-    "git_commit": "e191f74fd73e4b9cdddc1c4125194f293170d19f",
+    "git_commit": "wasn't provided during build",
     "hostname": "Tals-Mac-mini.lan",
-    "init_time": "2020-08-10T11:07:38.855258+03:00",
-    "up_time": "13m30.096195196s",
-    "version": "v0.0.1"
+    "init_time": "2020-08-13T13:27:28.946576+03:00",
+    "up_time": "11.987839422s",
+    "version": "wasn't provided during build"
   }
   ```
 
@@ -773,7 +775,7 @@ _If you want to try this part yourself, make sure you have access to Jaeger serv
 
 When someone calls our `Paint Car` API
 
-```shell
+```s
 PUT /v1/workshop/cars/12345678/paint HTTP/1.1
 Accept: application/json, */*;q=0.5
 Accept-Encoding: gzip, deflate
@@ -863,6 +865,32 @@ Actually this is what [opentelemetry](https://opentelemetry.io/about/) is about.
 Since this is a tutorial we are not going to write tests to cover all the code.
 Instead we will focus on the business logic only.
 
+### Overriding Configuration values in Tests
+
+It is sometimes convenient to override configuration values externally during tests.
+We expect that the configuration library is capable of doing that.
+In our case we use Viper and it allows to merge different configuration sources.
+Hence you can provide 2 config files [`config.yml`, `config_test.yml`] to the builder, or even more.
+
+Here is an example for tests
+
+- `config_test.yml`
+
+  ```yml
+  mortar:
+  name: "tutorial_test"
+  logger:
+    level: info
+    console: true
+  ```
+
+- Mortar Fx Option configuration
+  
+  ```golang
+    pwd, _ := os.Getwd()
+    mortar.ViperFxOption(pwd+"/<relative-path>/config/config.yml", pwd+"/<relative-path>/config/config_test.yml"),
+  ```
+
 ### Fake REST API calls
 
 Our Workshop logic remotely calls SubWorkshop using REST API. Although we can run a real SubWorkshop service that will answer our HTTP requests.
@@ -909,3 +937,33 @@ type subWorkshopControllerDeps struct {
 We mock `client.GRPCClientConnectionBuilder` and gRPC connection.
 
 Please look at `subworkshop_test.go` file to better understand this example.
+
+## Makefile and LDFLAGS
+
+Previously we mentioned that by calling <http://localhost:5382/self/build> you can see your service build information.
+But if you want to see them you need to inject them during build.
+
+Here you can see in the provided `Makefile` how it's done. Now you can run your service with
+
+```s
+make run
+```
+
+And should see something similar to
+
+```s
+HTTP/1.1 200 OK
+Content-Length: 200
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 13 Aug 2020 10:54:47 GMT
+
+{
+    "build_tag": "42",
+    "build_time": "2020-08-13T10:54:41Z",
+    "git_commit": "1f034c1",
+    "hostname": "Tals-Mac-mini.lan",
+    "init_time": "2020-08-13T13:54:43.044148+03:00",
+    "up_time": "4.410331293s",
+    "version": "v1.2.3"
+}
+```
