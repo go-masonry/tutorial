@@ -7,7 +7,7 @@ require (
 	github.com/go-masonry/bjaeger v0.0.0-00010101000000-000000000000
 	github.com/go-masonry/bviper v0.0.0-00010101000000-000000000000
 	github.com/go-masonry/bzerolog v0.0.0-00010101000000-000000000000
-	github.com/go-masonry/mortar v0.0.0-20200813075556-b02ba8f61e29
+	github.com/go-masonry/mortar v0.0.0-20200813090701-ae18affbbd70
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.5.1 // indirect
