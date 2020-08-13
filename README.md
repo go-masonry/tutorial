@@ -37,7 +37,7 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
     - [Overriding Configuration values in Tests](#overriding-configuration-values-in-tests)
     - [Fake REST API calls](#fake-rest-api-calls)
     - [Fake gRPC API calls](#fake-grpc-api-calls)
-  - [Makefile and LDFLAGS](#makefile-and-ldflags)
+  - [Part 7 Makefile and LDFLAGS](#part-7-makefile-and-ldflags)
 
 ## Prerequisites
 
@@ -747,7 +747,7 @@ Here is what you get just by adding these `fx.Option`s
   }
   ```
 
-- <http://localhost:5382/self/build> Exposes your build information. For this to work you will need to inject values during build, more on that [here](#makefile-and-ldflags).
+- <http://localhost:5382/self/build> Exposes your build information. For this to work you will need to inject values during build, more on that [here](#part-7-makefile-and-ldflags).
 
   ```json
   {
@@ -938,7 +938,7 @@ We mock `client.GRPCClientConnectionBuilder` and gRPC connection.
 
 Please look at `subworkshop_test.go` file to better understand this example.
 
-## Makefile and LDFLAGS
+## Part 7 Makefile and LDFLAGS
 
 Previously we mentioned that by calling <http://localhost:5382/self/build> you can see your service build information.
 But if you want to see them you need to inject them during build.
