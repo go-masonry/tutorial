@@ -33,6 +33,9 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
   - [Part 5 Middleware](#part-5-middleware)
     - [Debug, profile, configuration](#debug-profile-configuration)
     - [Tracing](#tracing)
+  - [Part 6 Tests](#part-6-tests)
+    - [Fake REST API calls](#fake-rest-api-calls)
+    - [Fake gRPC API calls](#fake-grpc-api-calls)
 
 ## Prerequisites
 
@@ -854,3 +857,55 @@ Actually this is what [opentelemetry](https://opentelemetry.io/about/) is about.
 > [Logging](https://en.wikipedia.org/wiki/Log_file) provides insight into application-specific messages emitted by processes.
 >
 > These verticals are tightly interconnected. Metrics can be used to pinpoint, for example, a subset of misbehaving traces. Logs associated with those traces could help to find the root cause of this behavior. And then new metrics can be configured, based on this discovery, to catch this issue earlier next time. Other verticals exist (continuous profiling, production debugging, etc.), however traces, metrics, and logs are the three most well adopted across the industry.
+
+## Part 6 Tests
+
+Since this is a tutorial we are not going to write tests to cover all the code.
+Instead we will focus on the business logic only.
+
+### Fake REST API calls
+
+Our Workshop logic remotely calls SubWorkshop using REST API. Although we can run a real SubWorkshop service that will answer our HTTP requests.
+This has nothing to do with the code we really want to test. To remind you here is the dependencies that Workshop Controller needs to work.
+
+```golang
+type workshopControllerDeps struct {
+  fx.In
+
+  DB                data.CarDB
+  Logger            log.Logger
+  HTTPClientBuilder client.NewHTTPClientBuilder
+}
+```
+
+You can manually create this struct and override only whats needed, but it's not interesting.
+Instead we will use Fx to create everything needed for Workshop Controller.
+Please look at `workshop_test.go` file to better understand this example.
+> Please pay special attention to `TestPaintCar`. It also shows how you can use HTTP Client interceptor to avoid any Remote Calls.
+
+### Fake gRPC API calls
+
+While Workshop need to call SubWorkshop using REST API, SubWorkshop is calling back using gRPC.
+This example also demonstrates the use of Mocked Interfaces.
+> Every Mortar Interface have a Mock generated for it using [gomock](https://github.com/golang/mock).
+> Mocked packages have a `mock_*` prefix
+>
+> - mock_client
+> - mock_server
+> - mock_trace
+> - ...
+
+Here are SubWorkshop dependencies
+
+```golang
+type subWorkshopControllerDeps struct {
+  fx.In
+
+  Logger            log.Logger
+  GRPCClientBuilder client.GRPCClientConnectionBuilder
+}
+```
+
+We mock `client.GRPCClientConnectionBuilder` and gRPC connection.
+
+Please look at `subworkshop_test.go` file to better understand this example.
