@@ -1,5 +1,6 @@
 package data
 
+// CarEntity is our internal representation of the car
 type CarEntity struct {
 	CarNumber     string
 	Owner         string

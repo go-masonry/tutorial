@@ -7,11 +7,13 @@ require (
 	github.com/go-masonry/bjaeger v0.0.0-00010101000000-000000000000
 	github.com/go-masonry/bviper v0.0.0-00010101000000-000000000000
 	github.com/go-masonry/bzerolog v0.0.0-00010101000000-000000000000
-	github.com/go-masonry/mortar v0.0.0-20200813060803-a19b67d434d2
+	github.com/go-masonry/mortar v0.0.0-20200813075556-b02ba8f61e29
+	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.14.7
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/stretchr/testify v1.6.1
 	go.uber.org/fx v1.13.0
 	go.uber.org/multierr v1.5.0 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect

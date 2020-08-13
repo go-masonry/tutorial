@@ -3,8 +3,9 @@ package validations
 import (
 	"context"
 	"fmt"
-	workshop "github.com/go-masonry/tutorial/complete/api"
 	"strings"
+
+	workshop "github.com/go-masonry/tutorial/complete/api"
 )
 
 type WorkshopValidations interface {

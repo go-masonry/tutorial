@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+
 	"go.uber.org/fx"
 )
 

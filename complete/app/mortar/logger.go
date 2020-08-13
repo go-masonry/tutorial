@@ -1,6 +1,8 @@
 package mortar
 
 import (
+	"os"
+
 	"github.com/go-masonry/bjaeger"
 	"github.com/go-masonry/bzerolog"
 	"github.com/go-masonry/mortar/interfaces/cfg"
@@ -8,7 +10,6 @@ import (
 	"github.com/go-masonry/mortar/mortar"
 	"github.com/go-masonry/mortar/providers"
 	"go.uber.org/fx"
-	"os"
 )
 
 func LoggerFxOption() fx.Option {

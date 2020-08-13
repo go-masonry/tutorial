@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-masonry/mortar/interfaces/http/client"
 	"github.com/go-masonry/mortar/interfaces/log"
 	workshop "github.com/go-masonry/tutorial/complete/api"
@@ -11,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// SubWorkshopController responsible for the business logic of our Sub Workshop
 type SubWorkshopController interface {
 	workshop.SubWorkshopServer
 }
@@ -26,6 +28,7 @@ type subWorkshopController struct {
 	deps subWorkshopControllerDeps
 }
 
+// CreateSubWorkshopController is a constructor to be used by Fx
 func CreateSubWorkshopController(deps subWorkshopControllerDeps) SubWorkshopController {
 	return &subWorkshopController{
 		deps: deps,

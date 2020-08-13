@@ -2,6 +2,7 @@ package mortar
 
 import (
 	"context"
+
 	"github.com/go-masonry/bjaeger"
 	"github.com/go-masonry/mortar/interfaces/cfg"
 	"github.com/go-masonry/mortar/interfaces/log"

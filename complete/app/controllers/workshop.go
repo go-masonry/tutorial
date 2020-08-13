@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-masonry/mortar/constructors/partial"
 	"github.com/go-masonry/mortar/interfaces/log"
+	"github.com/go-masonry/mortar/interfaces/http/client"
 	workshop "github.com/go-masonry/tutorial/complete/api"
 	"github.com/go-masonry/tutorial/complete/app/data"
 	"github.com/golang/protobuf/jsonpb"
@@ -20,6 +20,7 @@ const (
 	externalRestPort = "5381"
 )
 
+// WorkshopController responsible for the business logic of our Workshop
 type WorkshopController interface {
 	workshop.WorkshopServer
 }
@@ -29,7 +30,7 @@ type workshopControllerDeps struct {
 
 	DB                data.CarDB
 	Logger            log.Logger
-	HttpClientBuilder partial.HTTPClientPartialBuilder
+	HTTPClientBuilder client.NewHTTPClientBuilder
 }
 
 type workshopController struct {
@@ -38,8 +39,9 @@ type workshopController struct {
 	encoder *jsonpb.Marshaler
 }
 
+// CreateWorkshopController is a constructor for Fx
 func CreateWorkshopController(deps workshopControllerDeps) WorkshopController {
-	client := deps.HttpClientBuilder().Build()
+	client := deps.HTTPClientBuilder().Build()
 	encoder := &jsonpb.Marshaler{OrigName: true}
 	return &workshopController{
 		deps:    deps,

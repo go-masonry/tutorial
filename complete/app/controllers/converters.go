@@ -5,6 +5,7 @@ import (
 	"github.com/go-masonry/tutorial/complete/app/data"
 )
 
+// FromProtoCarToModelCar converts workshop proto model to our data Entity
 func FromProtoCarToModelCar(car *workshop.Car) *data.CarEntity {
 	if car == nil {
 		return nil
@@ -18,6 +19,7 @@ func FromProtoCarToModelCar(car *workshop.Car) *data.CarEntity {
 	}
 }
 
+// FromModelCarToProtoCar converts our data Entity to workshop proto model
 func FromModelCarToProtoCar(car *data.CarEntity) *workshop.Car {
 	if car == nil {
 		return nil
