@@ -1,6 +1,6 @@
 # Tutorial
 
-This tutorial will explain how to build a gRPC web service using [go-masonry/mortar](https://github.com/go-masonry/mortar)
+This tutorial will explain how to build a gRPC web service using [go-masonry/mortar](https://github.com/go-masonry/mortar) step by step.
 
 - [Tutorial](#tutorial)
   - [Prerequisites](#prerequisites)
@@ -90,14 +90,14 @@ service Workshop {
 
   rpc PaintCar(PaintCarRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/v1/workshop/cars/{car_id}/paint"
+      put: "/v1/workshop/cars/{car_number}/paint"
       body: "*"
     };
   }
 
   rpc RetrieveCar(RetrieveCarRequest) returns (Car) {
     option (google.api.http) = {
-      get: "/v1/workshop/cars/{car_id}"
+      get: "/v1/workshop/cars/{car_number}"
     };
   }
 }
@@ -170,7 +170,7 @@ Let's make a brief overview
 ├── api
 ├── app
 │   ├── controllers
-│   ├── db
+│   ├── data
 │   ├── mortar
 │   ├── services
 │   └── validations
@@ -183,7 +183,7 @@ Let's make a brief overview
 - `app` holds our service code.
   - `services` implements our gRPC API interfaces, also an entry point. Code here accepts all the input first.
   - `validations` treat everything related to validating input.
-  - `db` take a guess.
+  - `data` everything related to storing data.
   - `controllers` business logic lays here.
   - `mortar` later on this one.
 - `build` you will need to build your service (CI/CD).
@@ -263,7 +263,7 @@ type workshopController struct {
 }
 
 func (w *workshopController) PaintCar(ctx context.Context, request *workshop.PaintCarRequest) (*empty.Empty, error) {
-  car, err := w.deps.DB.GetCar(ctx, request.GetCarId())
+  car, err := w.deps.DB.GetCar(ctx, request.GetCarNumber())
   if err != nil {
     return nil, err
   }
@@ -289,7 +289,7 @@ Once our Workshop accepts a car it needs to store it somewhere. We will fake a D
 
 ```golang
 type CarEntity struct {
-  CarID         string
+  CarNumber     string
   Owner         string
   BodyStyle     string
   OriginalColor string
@@ -299,9 +299,9 @@ type CarEntity struct {
 
 type CarDB interface {
   InsertCar(ctx context.Context, car *CarEntity) error
-  PaintCar(ctx context.Context, carID string, newColor string) error
-  GetCar(ctx context.Context, carID string) (*CarEntity, error)
-  RemoveCar(ctx context.Context, carID string) (*CarEntity, error)
+  PaintCar(ctx context.Context, CarNumber string, newColor string) error
+  GetCar(ctx context.Context, CarNumber string) (*CarEntity, error)
+  RemoveCar(ctx context.Context, CarNumber string) (*CarEntity, error)
 }
 ```
 
@@ -327,7 +327,7 @@ func (s *subWorkshopController) PaintCar(ctx context.Context, request *workshop.
   }
   // Make client and call method
   workshopClient := workshop.NewWorkshopClient(conn)
-  return workshopClient.CarPainted(ctx, &workshop.PaintFinishedRequest{CarId: request.GetCar().GetId(), DesiredColor: request.GetDesiredColor()})
+  return workshopClient.CarPainted(ctx, &workshop.PaintFinishedRequest{CarNumber: request.GetCar().GetNumber(), DesiredColor: request.GetDesiredColor()})
 }
 ```
 

@@ -7,7 +7,7 @@ import (
 
 func HttpClientFxOptions() fx.Option {
 	return fx.Options(
-		providers.HttpClientBuildersFxOption(), // client builders
+		providers.HTTPClientBuildersFxOption(), // client builders
 		providers.TracerGRPCClientInterceptorFxOption(),
 		providers.TracerRESTClientInterceptorFxOption(),
 		providers.CopyGRPCHeadersClientInterceptorFxOption(),
@@ -16,7 +16,7 @@ func HttpClientFxOptions() fx.Option {
 
 func HttpServerFxOptions() fx.Option {
 	return fx.Options(
-		providers.HttpServerBuilderFxOption(), // Web Server Builder
+		providers.HTTPServerBuilderFxOption(), // Web Server Builder
 		providers.GRPCTracingUnaryServerInterceptorFxOption(),
 		providers.GRPCGatewayMetadataTraceCarrierFxOption(), // read it's documentation to understand better
 		providers.LoggerGRPCInterceptorFxOption(),

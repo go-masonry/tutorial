@@ -9,9 +9,9 @@ import (
 // This interface will represent our car db
 type CarDB interface {
 	InsertCar(ctx context.Context, car *CarEntity) error
-	PaintCar(ctx context.Context, carID string, newColor string) error
-	GetCar(ctx context.Context, carID string) (*CarEntity, error)
-	RemoveCar(ctx context.Context, carID string) (*CarEntity, error)
+	PaintCar(ctx context.Context, carNumber string, newColor string) error
+	GetCar(ctx context.Context, carNumber string) (*CarEntity, error)
+	RemoveCar(ctx context.Context, carNumber string) (*CarEntity, error)
 }
 
 type carDBDeps struct {
@@ -31,32 +31,32 @@ type carDB struct {
 }
 
 func (c *carDB) InsertCar(ctx context.Context, car *CarEntity) error {
-	if _, exists := c.cars[car.CarID]; exists {
-		return fmt.Errorf("car %s already exists", car.CarID)
+	if _, exists := c.cars[car.CarNumber]; exists {
+		return fmt.Errorf("car %s already exists", car.CarNumber)
 	}
-	c.cars[car.CarID] = car
+	c.cars[car.CarNumber] = car
 	return nil
 }
 
-func (c *carDB) PaintCar(ctx context.Context, carID string, newColor string) error {
-	if car, exists := c.cars[carID]; exists {
+func (c *carDB) PaintCar(ctx context.Context, carNumber string, newColor string) error {
+	if car, exists := c.cars[carNumber]; exists {
 		car.CurrentColor = newColor
 		car.Painted = true
 		return nil
 	}
-	return fmt.Errorf("unknown car ID %s", carID)
+	return fmt.Errorf("unknown car ID %s", carNumber)
 }
 
-func (c *carDB) GetCar(ctx context.Context, carID string) (*CarEntity, error) {
-	if car, exists := c.cars[carID]; exists {
+func (c *carDB) GetCar(ctx context.Context, carNumber string) (*CarEntity, error) {
+	if car, exists := c.cars[carNumber]; exists {
 		return car, nil
 	}
-	return nil, fmt.Errorf("unknown car ID %s", carID)
+	return nil, fmt.Errorf("unknown car ID %s", carNumber)
 }
-func (c *carDB) RemoveCar(ctx context.Context, carID string) (*CarEntity, error) {
-	car, err := c.GetCar(ctx, carID)
+func (c *carDB) RemoveCar(ctx context.Context, carNumber string) (*CarEntity, error) {
+	car, err := c.GetCar(ctx, carNumber)
 	if err == nil {
-		delete(c.cars, carID)
+		delete(c.cars, carNumber)
 		return car, nil
 	}
 	return nil, err

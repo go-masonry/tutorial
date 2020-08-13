@@ -29,7 +29,7 @@ type workshopControllerDeps struct {
 
 	DB                data.CarDB
 	Logger            log.Logger
-	HttpClientBuilder partial.HttpClientPartialBuilder
+	HttpClientBuilder partial.HTTPClientPartialBuilder
 }
 
 type workshopController struct {

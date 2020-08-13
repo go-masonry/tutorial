@@ -10,7 +10,7 @@ func FromProtoCarToModelCar(car *workshop.Car) *data.CarEntity {
 		return nil
 	}
 	return &data.CarEntity{
-		CarID:         car.GetNumber(),
+		CarNumber:     car.GetNumber(),
 		Owner:         car.GetOwner(),
 		BodyStyle:     workshop.CarBody_name[int32(car.GetBodyStyle())],
 		OriginalColor: car.GetColor(),
@@ -23,7 +23,7 @@ func FromModelCarToProtoCar(car *data.CarEntity) *workshop.Car {
 		return nil
 	}
 	return &workshop.Car{
-		Number:    car.CarID,
+		Number:    car.CarNumber,
 		Owner:     car.Owner,
 		BodyStyle: workshop.CarBody(workshop.CarBody_value[car.BodyStyle]),
 		Color:     car.CurrentColor,

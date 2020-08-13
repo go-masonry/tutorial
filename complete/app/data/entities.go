@@ -1,7 +1,7 @@
 package data
 
 type CarEntity struct {
-	CarID         string
+	CarNumber     string
 	Owner         string
 	BodyStyle     string
 	OriginalColor string
