@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-masonry/mortar/interfaces/log"
 	"github.com/go-masonry/mortar/interfaces/http/client"
+	"github.com/go-masonry/mortar/interfaces/log"
 	workshop "github.com/go-masonry/tutorial/complete/api"
 	"github.com/go-masonry/tutorial/complete/app/data"
 	"github.com/golang/protobuf/jsonpb"

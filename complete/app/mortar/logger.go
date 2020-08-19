@@ -17,15 +17,12 @@ func LoggerFxOption() fx.Option {
 		fx.Provide(zeroLogBuilder),
 		providers.LoggerFxOption(),
 		providers.LoggerGRPCIncomingContextExtractorFxOption(),
+		bjaeger.TraceInfoContextExtractorFxOption(),
 	)
 }
 
 func zeroLogBuilder(config cfg.Config) log.Builder {
-	builder := bzerolog.
-		Builder().
-		// You can add explicit context extractors here or use the implicit fx.Group used by `go-masonry/mortar/constructors/logger.go`
-		AddContextExtractors(bjaeger.TraceInfoExtractorFromContext)
-
+	builder := bzerolog.Builder().IncludeCaller()
 	if config.Get(mortar.LoggerWriterConsole).Bool() {
 		builder = builder.SetWriter(bzerolog.ConsoleWriter(os.Stderr))
 	}

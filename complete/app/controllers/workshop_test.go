@@ -2,6 +2,12 @@ package controllers_test
 
 import (
 	"context"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/go-masonry/mortar/http/client"
 	clientInt "github.com/go-masonry/mortar/interfaces/http/client"
 	workshop "github.com/go-masonry/tutorial/complete/api"
@@ -12,11 +18,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
-	"testing"
 )
 
 type workshopSuite struct {

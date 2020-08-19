@@ -3,6 +3,9 @@ package controllers_test
 import (
 	"context"
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/go-masonry/mortar/interfaces/http/client"
 	mock_client "github.com/go-masonry/mortar/interfaces/http/client/mock"
 	workshop "github.com/go-masonry/tutorial/complete/api"
@@ -13,18 +16,16 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
 	"google.golang.org/grpc"
-	"os"
-	"testing"
 )
 
 type subWorkshopSuite struct {
 	suite.Suite
-	pwd           string
-	ctrl          *gomock.Controller
-	app           *fxtest.App
+	pwd                 string
+	ctrl                *gomock.Controller
+	app                 *fxtest.App
 	grpcConnBuilderMock *mock_client.MockGRPCClientConnectionBuilder
-	gRPCWrapperMock *mock_client.MockGRPCClientConnectionWrapper
-	subController controllers.SubWorkshopController
+	gRPCWrapperMock     *mock_client.MockGRPCClientConnectionWrapper
+	subController       controllers.SubWorkshopController
 }
 
 func TestSubWorkshop(t *testing.T) {
@@ -74,7 +75,7 @@ func (s *subWorkshopSuite) SetupTest() {
 		fx.NopLogger, // remove fx debug prints
 		mortar.ViperFxOption(s.pwd+"/../../config/config.yml", s.pwd+"/../../config/config_test.yml"),
 		mortar.LoggerFxOption(),
-		fx.Provide(func() client.GRPCClientConnectionBuilder{
+		fx.Provide(func() client.GRPCClientConnectionBuilder {
 			return s.grpcConnBuilderMock
 		}),
 		fx.Provide(controllers.CreateSubWorkshopController),
