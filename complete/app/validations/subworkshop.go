@@ -2,7 +2,9 @@ package validations
 
 import (
 	"context"
-	"fmt"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	workshop "github.com/go-masonry/tutorial/complete/api"
 )
@@ -18,10 +20,10 @@ func CreateSubWorkshopValidations() SubWorkshopValidations {
 }
 func (s subWorkshopValidations) PaintCar(ctx context.Context, request *workshop.SubPaintCarRequest) error {
 	if len(request.GetCallbackServiceAddress()) == 0 {
-		return fmt.Errorf("callback service address cannot be empty")
+		return status.Errorf(codes.InvalidArgument, "callback service address cannot be empty")
 	}
 	if request.GetCar() == nil {
-		return fmt.Errorf("car can't be empty")
+		return status.Errorf(codes.InvalidArgument, "car can't be empty")
 	}
 	return nil
 }

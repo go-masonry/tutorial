@@ -30,6 +30,7 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 		mortar.ViperFxOption(configFilePath, additionalFiles...), // Configuration map
 		mortar.LoggerFxOption(),                                  // Logger
 		mortar.TracerFxOption(),                                  // Jaeger tracing
+		mortar.PrometheusFxOption(),                              // Prometheus
 		mortar.HttpClientFxOptions(),
 		mortar.HttpServerFxOptions(),
 		mortar.InternalHttpHandlersFxOptions(),

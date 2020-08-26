@@ -2,10 +2,12 @@ package validations
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
+	"google.golang.org/grpc/codes"
+
 	workshop "github.com/go-masonry/tutorial/complete/api"
+	"google.golang.org/grpc/status"
 )
 
 type WorkshopValidations interface {
@@ -31,7 +33,7 @@ func (w *workshopValidations) PaintCar(ctx context.Context, request *workshop.Pa
 	if _, supported := supportedColors[strings.ToLower(request.GetDesiredColor())]; supported {
 		return nil
 	}
-	return fmt.Errorf("out of ink for %s", request.GetDesiredColor())
+	return status.Errorf(codes.InvalidArgument, "out of ink for %s", request.GetDesiredColor())
 }
 
 func (w *workshopValidations) RetrieveCar(ctx context.Context, request *workshop.RetrieveCarRequest) error {
@@ -44,7 +46,7 @@ func (w *workshopValidations) CarPainted(ctx context.Context, request *workshop.
 
 func carIdValidation(carID string) error {
 	if len(carID) != 8 {
-		return fmt.Errorf("%s should be 8 chars long", carID)
+		return status.Errorf(codes.InvalidArgument, "%s should be 8 chars long", carID)
 	}
 	return nil
 }
