@@ -1,0 +1,63 @@
+mortar:
+  name: "tutorial"
+  server:
+    grpc:
+      port: 5380
+    rest:
+      external:
+        port: 5381
+      internal:
+        port: 5382
+  logger:
+    level: debug
+    console: true
+  monitor:
+    address: "address:port"
+    prefix: "awesome.project"
+    tags:
+      tag1: value
+      tag2: value
+      tag3: value
+  middleware:
+    rest:
+      client:
+        trace:
+          request: true
+          response: true
+    grpc:
+      server:
+        log:
+          request: true
+          response: false
+          level: debug
+        trace:
+          request: true
+          response: true
+        headers:
+          - authorization
+      client:
+        trace:
+          request: true
+          response: true
+    logger:
+      headers:
+        - x-forwarded-for
+        - special-header
+  handlers:
+    self:
+      obfuscate:
+        - "pass"
+        - "auth"
+        - "secret"
+        - "login"
+        - "user"
+        - "logname"
+        - "token"
+
+custom:
+  authentication: "1234567890"
+  token: "very secret token"
+  plain: "text"
+  secretmap:
+    one: 1
+    two: 2
