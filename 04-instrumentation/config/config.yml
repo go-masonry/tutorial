@@ -1,0 +1,13 @@
+mortar:
+  name: "tutorial"
+  server:
+    grpc:
+      port: 5380
+    rest:
+      external:
+        port: 5381
+      internal:
+        port: 5382
+  logger:
+    level: debug
+    console: true
