@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "garage.proto",
+    "title": "api/garage.proto",
     "version": "version not set"
   },
   "consumes": [
@@ -75,7 +75,7 @@
         ]
       }
     },
-    "/v1/workshop/cars/{car_id}": {
+    "/v1/workshop/cars/{car_number}": {
       "get": {
         "operationId": "Workshop_RetrieveCar",
         "responses": {
@@ -94,7 +94,7 @@
         },
         "parameters": [
           {
-            "name": "car_id",
+            "name": "car_number",
             "in": "path",
             "required": true,
             "type": "string"
@@ -105,7 +105,7 @@
         ]
       }
     },
-    "/v1/workshop/cars/{car_id}/paint": {
+    "/v1/workshop/cars/{car_number}/paint": {
       "put": {
         "operationId": "Workshop_PaintCar",
         "responses": {
@@ -124,7 +124,7 @@
         },
         "parameters": [
           {
-            "name": "car_id",
+            "name": "car_number",
             "in": "path",
             "required": true,
             "type": "string"
@@ -148,11 +148,11 @@
     "Carbody": {
       "type": "string",
       "enum": [
-        "sedan",
-        "phaeton",
-        "hatchback"
+        "SEDAN",
+        "PHAETON",
+        "HATCHBACK"
       ],
-      "default": "sedan"
+      "default": "SEDAN"
     },
     "protobufAny": {
       "type": "object",
@@ -190,7 +190,7 @@
     "workshopCar": {
       "type": "object",
       "properties": {
-        "id": {
+        "number": {
           "type": "string"
         },
         "owner": {
@@ -207,7 +207,7 @@
     "workshopPaintCarRequest": {
       "type": "object",
       "properties": {
-        "car_id": {
+        "car_number": {
           "type": "string"
         },
         "desired_color": {
