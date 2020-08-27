@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	workshop "github.com/go-masonry/tutorial/complete/api"
+	workshop "github.com/go-masonry/tutorial/07-makefile/api"
 )
 
 type SubWorkshopValidations interface {

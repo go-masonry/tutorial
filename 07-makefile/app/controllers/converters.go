@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	workshop "github.com/go-masonry/tutorial/complete/api"
-	"github.com/go-masonry/tutorial/complete/app/data"
+	workshop "github.com/go-masonry/tutorial/07-makefile/api"
+	"github.com/go-masonry/tutorial/07-makefile/app/data"
 )
 
 // FromProtoCarToModelCar converts workshop proto model to our data Entity

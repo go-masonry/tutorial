@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/go-masonry/mortar/interfaces/log"
-	workshop "github.com/go-masonry/tutorial/complete/api"
-	"github.com/go-masonry/tutorial/complete/app/controllers"
-	"github.com/go-masonry/tutorial/complete/app/validations"
+	workshop "github.com/go-masonry/tutorial/07-makefile/api"
+	"github.com/go-masonry/tutorial/07-makefile/app/controllers"
+	"github.com/go-masonry/tutorial/07-makefile/app/validations"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"
 )

@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-masonry/mortar/interfaces/http/client"
 	"github.com/go-masonry/mortar/interfaces/log"
-	workshop "github.com/go-masonry/tutorial/complete/api"
+	workshop "github.com/go-masonry/tutorial/07-makefile/api"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
