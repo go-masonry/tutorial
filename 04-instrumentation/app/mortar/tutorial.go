@@ -3,8 +3,8 @@ package mortar
 import (
 	"context"
 
-	"github.com/go-masonry/mortar/constructors/partial"
 	serverInt "github.com/go-masonry/mortar/interfaces/http/server"
+	"github.com/go-masonry/mortar/providers/groups"
 	workshop "github.com/go-masonry/tutorial/04-instrumentation/api"
 	"github.com/go-masonry/tutorial/04-instrumentation/app/controllers"
 	"github.com/go-masonry/tutorial/04-instrumentation/app/data"
@@ -27,12 +27,12 @@ func TutorialAPIsAndOtherDependenciesFxOption() fx.Option {
 	return fx.Options(
 		// GRPC Service APIs registration
 		fx.Provide(fx.Annotated{
-			Group:  partial.FxGroupGRPCServerAPIs,
+			Group:  groups.FxGroupGRPCServerAPIs,
 			Target: tutorialGRPCServiceAPIs,
 		}),
 		// GRPC Gateway Generated Handlers registration
 		fx.Provide(fx.Annotated{
-			Group:  partial.FxGroupGRPCGatewayGeneratedHandlers + ",flatten", // "flatten" does this [][]serverInt.GRPCGatewayGeneratedHandlers -> []serverInt.GRPCGatewayGeneratedHandlers
+			Group:  groups.FxGroupGRPCGatewayGeneratedHandlers + ",flatten", // "flatten" does this [][]serverInt.GRPCGatewayGeneratedHandlers -> []serverInt.GRPCGatewayGeneratedHandlers
 			Target: tutorialGRPCGatewayHandlers,
 		}),
 		// All other tutorial dependencies

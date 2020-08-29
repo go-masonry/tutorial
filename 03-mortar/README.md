@@ -40,11 +40,11 @@ For example let's look at `workshopControllerDeps`
 
 ```golang
 type workshopControllerDeps struct {
-  fx.In
+ fx.In
 
-  DB                db.CarDB
-  Logger            log.Logger
-  HttpClientBuilder partial.HttpClientPartialBuilder
+ DB                data.CarDB
+ Logger            log.Logger
+ HTTPClientBuilder client.NewHTTPClientBuilder
 }
 
 func (w *workshopController) AcceptCar(ctx context.Context, car *workshop.Car) (*empty.Empty, error) {
