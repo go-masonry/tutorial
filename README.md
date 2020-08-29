@@ -12,7 +12,7 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
 
 ## How to read this tutorial
 
-### There are 7 parts in this tutorial, each part adds on top the previous one
+### There are 7 parts in this tutorial, each part adds on top of previous one
 
 1. [Tutorial service API](01-api)
 2. [Project structure and business logic](02-logic)
