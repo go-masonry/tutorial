@@ -14,7 +14,13 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
 
 ### There are 7 parts in this tutorial, each part adds on top the previous one
 
-### In each part there is a README file
+1. [Tutorial service API](01-api/README.md)
+2. [Project structure and business logic](02-logic/README.md)
+3. [Dependency Injection and Mortar](03-mortar/README.md)
+4. [Wiring/Instrumentation of everything together](04-instrumentation/README.md)
+5. [Mortar Middleware](05-middleware/README.md)
+6. [Tests example](06-tests/README.md)
+7. [Makefile](07-makefile/README.md)
 
 >You can create a local git repository and copy [01-api](01-api/) to it. Once you seen/understand the code, commit. Then copy [02-api](02-logic/) contents to your directory. This will overwrite some code.
 >
