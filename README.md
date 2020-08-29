@@ -18,7 +18,7 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
 2. [Project structure and business logic](02-logic)
 3. [Dependency Injection and Mortar](03-mortar)
 4. [Wiring/Instrumentation of everything together](04-instrumentation)
-5. [Mortar Middleware](05-middleware)
+5. [Mortar Middleware (Tracing, Monitoring, etc)](05-middleware)
 6. [Tests example](06-tests)
 7. [Makefile](07-makefile)
 
