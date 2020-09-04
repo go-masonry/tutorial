@@ -97,14 +97,14 @@ service SubWorkshop{
 
 If you haven't installed grpc-gateway plugin by now, please do.
 
-To generate our code we will run the following command from within the `tutorial/api` directory
+To generate our code we will run the following command from within the `api` directory
 
 ```shell
 protoc  -I. \
   -I$GOPATH/src \
   -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
-  --grpc-gateway_out=:. \
-  --swagger_out=:. \
+  --grpc-gateway_out=repeated_path_param_separator=ssv:. \
+  --openapiv2_out=repeated_path_param_separator=ssv:. \
   --go_out=plugins=grpc:. \
   garage.proto
 ```
