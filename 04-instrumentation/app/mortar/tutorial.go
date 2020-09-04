@@ -10,7 +10,7 @@ import (
 	"github.com/go-masonry/tutorial/04-instrumentation/app/data"
 	"github.com/go-masonry/tutorial/04-instrumentation/app/services"
 	"github.com/go-masonry/tutorial/04-instrumentation/app/validations"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 )
@@ -27,12 +27,12 @@ func TutorialAPIsAndOtherDependenciesFxOption() fx.Option {
 	return fx.Options(
 		// GRPC Service APIs registration
 		fx.Provide(fx.Annotated{
-			Group:  groups.FxGroupGRPCServerAPIs,
+			Group:  groups.GRPCServerAPIs,
 			Target: tutorialGRPCServiceAPIs,
 		}),
 		// GRPC Gateway Generated Handlers registration
 		fx.Provide(fx.Annotated{
-			Group:  groups.FxGroupGRPCGatewayGeneratedHandlers + ",flatten", // "flatten" does this [][]serverInt.GRPCGatewayGeneratedHandlers -> []serverInt.GRPCGatewayGeneratedHandlers
+			Group:  groups.GRPCGatewayGeneratedHandlers + ",flatten", // "flatten" does this [][]serverInt.GRPCGatewayGeneratedHandlers -> []serverInt.GRPCGatewayGeneratedHandlers
 			Target: tutorialGRPCGatewayHandlers,
 		}),
 		// All other tutorial dependencies
