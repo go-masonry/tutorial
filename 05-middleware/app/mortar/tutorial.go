@@ -10,7 +10,7 @@ import (
 	"github.com/go-masonry/tutorial/05-middleware/app/data"
 	"github.com/go-masonry/tutorial/05-middleware/app/services"
 	"github.com/go-masonry/tutorial/05-middleware/app/validations"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 )
