@@ -109,4 +109,7 @@ protoc  -I. \
   garage.proto
 ```
 
+>According to grpc-gateway [latest release](https://github.com/grpc-ecosystem/grpc-gateway/releases/tag/v1.14.8), v1 is going to maintenance mode.
+>Please make sure you switch to [v2](https://github.com/grpc-ecosystem/grpc-gateway/tree/v2).
+
 You can find all the files [here](api/).
