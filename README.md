@@ -22,8 +22,11 @@ This tutorial will explain how to build a gRPC web service using [go-masonry/mor
 6. [Tests example](06-tests)
 7. [Makefile](07-makefile)
 
->You can create a local git repository and copy [01-api](01-api/) to it. Once you seen/understand the code, commit. Then copy [02-api](02-logic/) contents to your directory. This will overwrite some code.
+>You can create a local git repository and copy [01-api](01-api) to it. Once you seen/understand the code, commit. Then copy [02-api](02-logic/) contents to your directory. This will overwrite some code.
 >
 >Repeat for each subsequent part. This way you will have git to show you what actually changed.
 >
 >*** Make sure to adjust imports accordingly.
+
+### Alternate way to pass through tutorial
+Read the docs of all 7 parts described above and clone the [alternate-example](alternate-example). You'll find there almost the same code organized in a different way: there are 2 independent microservices and common module. 
