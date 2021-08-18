@@ -1,5 +1,8 @@
 # Tutorial
 
+## **NOTE** This tutorial is outdated, instead read here: https://go-masonry.github.io and use this [template](https://github.com/go-masonry/mortar-template)
+
+
 This tutorial will explain how to build a gRPC web service using [go-masonry/mortar](https://github.com/go-masonry/mortar) step by step.
 
 ## Prerequisites
